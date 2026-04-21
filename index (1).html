@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NutriQuest — Nutrition & Dietetics Game</title>
+  <meta name="description" content="Learn nutrition and dietetics through clinical case scenarios. Based on Mudambi & Rajagopal.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ════════════════════════════════════
+  HOME SCREEN
+════════════════════════════════════ -->
+<div class="screen" id="screen-home">
+  <div class="wrap">
+
+    <div class="home-hero">
+      <div class="logo-wrap">
+        <span class="logo-icon">🍽️</span>
+        <div class="logo-text">
+          <span>Nutri</span><span>Quest</span>
+        </div>
+      </div>
+      <div class="home-tagline">Nutrition &amp; Dietetics · Case Game</div>
+      <div class="home-subtitle">Based on Mudambi &amp; Rajagopal — Fundamentals of Foods, Nutrition and Diet Therapy</div>
+    </div>
+
+    <!-- XP / Level bar -->
+    <div class="home-xp-bar">
+      <span class="xp-level-badge" id="xp-badge-emoji">📚</span>
+      <div class="xp-info">
+        <div class="xp-level-name" id="xp-level-name">Level 1 — Nutrition Student</div>
+        <div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+        <div class="xp-numbers" id="xp-numbers">0 / 40 XP</div>
+      </div>
+    </div>
+
+    <!-- Game modes -->
+    <div class="section-title">Choose your mode</div>
+    <div class="mode-grid">
+
+      <div class="mode-card" data-mode="classic" onclick="selectMode('classic')">
+        <span class="mode-emoji">🎯</span>
+        <span class="mode-name">Classic Mix</span>
+        <span class="mode-desc">15 questions from all categories</span>
+        <span class="mode-badge">All Categories</span>
+      </div>
+
+      <div class="mode-card" data-mode="category" onclick="selectMode('category')">
+        <span class="mode-emoji">🗂️</span>
+        <span class="mode-name">Category Focus</span>
+        <span class="mode-desc">Master one topic at a time</span>
+        <span class="mode-badge">Deep Dive</span>
+      </div>
+
+      <div class="mode-card" data-mode="speed" onclick="selectMode('speed')">
+        <span class="mode-emoji">⚡</span>
+        <span class="mode-name">Speed Run</span>
+        <span class="mode-desc">10 questions, 10 seconds each</span>
+        <span class="mode-badge">10 Seconds</span>
+      </div>
+
+      <div class="mode-card" data-mode="survival" onclick="selectMode('survival')">
+        <span class="mode-emoji">💀</span>
+        <span class="mode-name">Survival</span>
+        <span class="mode-desc">3 lives — how far can you go?</span>
+        <span class="mode-badge">Endless</span>
+      </div>
+
+    </div>
+
+    <!-- Categories preview -->
+    <div class="section-title">Topics covered</div>
+    <div class="cat-grid" style="margin-bottom:40px;">
+      <div class="cat-card" style="cursor:default;">
+        <span class="cat-emoji">🔍</span>
+        <span class="cat-name">Food Detective</span>
+        <span class="cat-count">12 questions</span>
+      </div>
+      <div class="cat-card" style="cursor:default;">
+        <span class="cat-emoji">🏥</span>
+        <span class="cat-name">Clinical Rounds</span>
+        <span class="cat-count">12 questions</span>
+      </div>
+      <div class="cat-card" style="cursor:default;">
+        <span class="cat-emoji">💊</span>
+        <span class="cat-name">Nutrient Match</span>
+        <span class="cat-count">12 questions</span>
+      </div>
+      <div class="cat-card" style="cursor:default;">
+        <span class="cat-emoji">🛡️</span>
+        <span class="cat-name">Food Safety</span>
+        <span class="cat-count">9 questions</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+  SETUP SCREEN (category/diff pickers)
+  — rendered dynamically by game.js —
+════════════════════════════════════ -->
+<div class="screen" id="screen-setup">
+  <div class="wrap" style="padding: 32px 0;"></div>
+</div>
+
+<!-- ════════════════════════════════════
+  GAME SCREEN
+════════════════════════════════════ -->
+<div class="screen" id="screen-game">
+
+  <!-- Sticky header -->
+  <div class="game-header">
+    <div class="game-topbar">
+
+      <div class="game-stat score-stat">
+        <span class="s-label">Score</span>
+        <span class="s-val" id="stat-score">0</span>
+      </div>
+
+      <div class="game-stat streak-stat" id="streak-stat">
+        <span class="s-label">Streak</span>
+        <span class="s-val" id="stat-streak">0</span>🔥
+      </div>
+
+      <div class="game-stat" id="q-count-stat">
+        <span class="s-label">Q</span>
+        <span class="s-val" id="q-count">1/15</span>
+      </div>
+
+      <!-- Multiplier badge (hidden by default) -->
+      <div class="game-stat multiplier-active" id="mult-badge" style="display:none;"></div>
+
+      <!-- Lives (survival only) -->
+      <div class="game-stat lives-stat" id="lives-wrap" style="display:none;">
+        <div class="lives-row" id="lives-display">
+          <span class="life">❤️</span>
+          <span class="life">❤️</span>
+          <span class="life">❤️</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Overall progress -->
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+
+    <!-- Timer -->
+    <div class="timer-wrap" id="timer-wrap">
+      <div class="timer-bar-track">
+        <div class="timer-bar-fill" id="timer-fill" style="width:100%"></div>
+      </div>
+      <span class="timer-num" id="timer-num">25</span>
+    </div>
+
+  </div><!-- /game-header -->
+
+  <!-- Game body -->
+  <div class="game-body">
+    <div class="wrap">
+
+      <!-- Question card -->
+      <div class="q-card" id="q-card">
+
+        <!-- Card header: badges + Q number -->
+        <div class="q-card-header">
+          <span class="q-cat-badge food" id="q-cat-badge">🔍 Food Detective</span>
+          <span class="q-diff-badge easy" id="q-diff-badge">🌱 Easy</span>
+          <span class="q-num" id="q-num">Q1/15</span>
+        </div>
+
+        <!-- Big food emoji -->
+        <div class="q-emoji-wrap">
+          <span class="q-emoji" id="q-emoji">🥕</span>
+        </div>
+
+        <!-- Question text -->
+        <div class="q-text" id="q-text">Loading question...</div>
+
+        <!-- Options 2×2 grid -->
+        <div class="options-grid" id="options-container">
+          <!-- Rendered by game.js -->
+        </div>
+
+      </div><!-- /q-card -->
+
+      <!-- Feedback strip -->
+      <div class="feedback-strip" id="feedback-strip"></div>
+
+      <!-- Next button -->
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()">Next Question →</button>
+
+    </div>
+  </div>
+
+</div><!-- /screen-game -->
+
+<!-- ════════════════════════════════════
+  END / RESULTS SCREEN
+════════════════════════════════════ -->
+<div class="screen" id="screen-end">
+  <div class="wrap">
+    <div class="end-card">
+
+      <span class="end-emoji" id="end-emoji">🏆</span>
+      <div class="end-title" id="end-title">Outstanding!</div>
+      <div class="end-sub" id="end-sub">You think like a Chief Dietitian.</div>
+
+      <div class="score-display" id="end-score">0</div>
+      <div class="score-denom" id="end-denom">out of 0 correct</div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-box-val" id="stat-pts">0</span>
+          <span class="stat-box-label">Total Points</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-val" id="stat-best-streak">0</span>
+          <span class="stat-box-label">Best Streak</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-val" id="stat-pct">0%</span>
+          <span class="stat-box-label">Accuracy</span>
+        </div>
+      </div>
+
+      <!-- XP gained -->
+      <div class="xp-gained">
+        <span class="xp-gained-icon">⭐</span>
+        <div class="xp-gained-text">
+          <div class="xp-gained-label">Experience earned</div>
+          <div class="xp-gained-val" id="xp-gained-val">+0 XP</div>
+          <div class="xp-gained-label" id="xp-gained-level"></div>
+        </div>
+      </div>
+
+      <!-- Category breakdown -->
+      <div class="cat-breakdown">
+        <div class="breakdown-title">Performance by category</div>
+        <div id="cat-breakdown-rows"></div>
+      </div>
+
+      <button class="btn-restart" onclick="restartSame()">Play Again 🔄</button>
+      <button class="btn-home" onclick="goHome()">← Back to Home</button>
+
+    </div>
+  </div>
+</div><!-- /screen-end -->
+
+<!-- ════ Scripts ════ -->
+<script src="questions.js"></script>
+<script src="game.js"></script>
+
+</body>
+</html>
